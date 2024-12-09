@@ -1,0 +1,16 @@
+[package]
+name = "nrf-probe"
+description = "Utility for discovering and capturing radio packets emitted by nRF24L01+ compatible transceivers"
+authors = ["Daniel Würsch"]
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.94"
+bit-vec = "0.8.0"
+crc = "3.2.1"
+ctrlc = "3.4.5"
+hex = "0.4.3"
+itertools = "0.13.0"
+rustradio = { version = "0.6.1", features = ["soapysdr", "fast-math"] }
+structopt = "0.3.26"
