@@ -79,8 +79,8 @@ struct Opt {
     rate: u8,
 
     /// Prints statistics about received packets instead of full packet payloads
-    #[structopt(long = "stats")]
-    stats: bool,
+    #[structopt(long = "discover")]
+    discover: bool,
 }
 
 impl Opt {
@@ -224,7 +224,7 @@ pub fn main() -> Result<(), Error> {
         .expect("At least one channel must be provided");
 
     // output receives messages
-    if options.stats {
+    if options.discover {
         graph.add(Box::new(NrfStatSink::new(union)));
     } else {
         graph.add(Box::new(StdoutSink::new(union)));

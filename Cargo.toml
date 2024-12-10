@@ -1,6 +1,6 @@
 [package]
 name = "nrf-probe"
-description = "Utility for discovering and capturing radio packets emitted by nRF24L01+ compatible transceivers"
+description = "Utility for discovering and capturing Nordic Semiconductor proprietary protocol radio packets emitted by Nordic Semiconductor nRF2401, nRF24L01+, nRF52840 and compatible transceivers"
 authors = ["Daniel Würsch"]
 version = "0.0.1"
 edition = "2021"
