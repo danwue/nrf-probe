@@ -24,9 +24,13 @@ For example, for Arch Linux, assuming that a HackRF SDR is used, it can be insta
 
 ### Building
 
+To compile the binary, Rust's package manager `cargo` can be invoked as follows:
+
 ```
 RUSTFLAGS="-C target-cpu=native" cargo build
 ```
+
+After successful compilation, the (statically linked) binary will be available in `./target/release/nrf-probe`.
 
 ## Usage
 
@@ -55,26 +59,59 @@ OPTIONS:
 
 Within the noise received by the software defined radio, there are many false positives, i.e. bit sequences starting with the correct preamble and ending with a valid CRC checksum. Filtering on additional information like payload length and logical address will significantly reduce false positives and improve performance. To discover nearby devices, their logical addresses and payload length, the parameter `--discover` can be supplied which will list the most frequently encountered logical addresses.
 
-Example to discover nearby devices which use a 5-byte logical address and are broadcasting Enhanced ShockBurst messages:
+Example to discover nearby devices which use a 4-byte logical address and are broadcasting Enhanced ShockBurst messages:
 
 ```
-./nrf-probe --shockburst --alen 5 --channel 20,22,24,26,28 --discover
+$ ./nrf-probe --shockburst --alen 4 --channel 39,41,43,45,47 --discover
+Address    | Count | Payload Length | Channels
+1b61c5c5   |    62 | 16             | 47
+194ab202   |     1 | 22             | 45
+aabbd9f3   |     1 | 21             | 45
+f822f2b5   |     1 | 25             | 47
+156bee51   |     1 | 6              | 45
+5e965159   |     1 | 23             | 43
+2f287ca0   |     1 | 26             | 45
+69595dba   |     1 | 4              | 43
+8ae61569   |     1 | 27             | 43
+e746ff72   |     1 | 17             | 45
 ```
+
+Having received many packets with identical logical address (like `1b61c5c5` in above example) is a strong indicator that the signal is emitted by a real device and it is not simply background noise.
 
 ### Capturing packets emitted by nRF2401
 
 Example to receive packets emitted by nRF2401 with fixed payload length of 25 bytes and address length of 5 bytes with prefix `0x0707` on channel 39 and channel 47 simultaneously.
 
 ```
-./nrf-probe --plen 25 --alen 5 --address 0707 --channel 39,47
+$ ./nrf-probe --plen 25 --alen 5 --address 0707 --channel 39,41,43,45,47
+ Ch Addr       Payload
+ 39 07070029d2 cb415d1a5ede802122a56ea4070c0842aebc7bad29df4b9519
+ 47 07070029d2 cb415d1a5ede802122a56ea4070c0842aebc7bad29df4b9519
+ 39 07070029d2 56c0aeaa430e64705d6027b175f46969499188ca361a006703
+ 47 07070029d2 56c0aeaa430e64705d6027b175f46969499188ca361a006703
+ 47 07070029d2 860e3a30e16c3c10e621dc2bb835313cf2461c50cedb02a4b8
+ 39 07070029d2 860e3a30e16c3c10e621dc2bb835313cf2461c50cedb02a4b8
+ 39 07070029d2 b610729441c0d7ebcbe7413577cd2d2bacbc3a9a36fe9b61a2
+ 47 07070029d2 b610729441c0d7ebcbe7413577cd2d2bacbc3a9a36fe9b61a2
 ```
 
 ### Capturing packets emitted by nRF24L01+
 
-Example to receive packets Enhanced ShockBurst packets of dynamic lengths emitted by nRF24L01+ with address length of 4 bytes on channel 47 and 87 simultaneously.
+Example to receive packets Enhanced ShockBurst packets of dynamic lengths emitted by nRF24L01+ with address length of 4 bytes starting with `1b`, on channel 45, 47 and 49 simultaneously.
 
 ```
-./nrf-probe --shockburst --alen 4 --channel 47,87
+$ ./nrf-probe --shockburst --alen 4 --channel 45,47,49 --address 1b
+ Ch Addr     Payload
+ 47 1b61c5c5 ba91fefe14d67d2bd523ec8f3d9cfd67
+ 47 1b61c5c5 ba91fefe14d67d2bd523ec8f3d9cfd67
+ 47 1b61c5c5 94ee0dc7a78e78559eb2002aa256f7b4
+ 47 1b61c5c5 94ee0dc7a78e78559eb2002aa256f7b4
+ 47 1b61c5c5 45baa548880c2bd584ae240d44d9ffdc
+ 47 1b61c5c5 45baa548880c2bd584ae240d44d9ffdc
+ 47 1b61c5c5 fe7af87fdcaac1831c80b9aa241d7900
+ 47 1b61c5c5 fe7af87fdcaac1831c80b9aa241d7900
+ 47 1b61c5c5 d7df4169576506dfdb755dbbc1871da9
+ 47 1b61c5c5 d7df4169576506dfdb755dbbc1871da9
 ```
 
 ## Authors

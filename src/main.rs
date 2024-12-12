@@ -9,7 +9,7 @@ use mul::Multiply;
 use nrf_stat_sink::NrfStatSink;
 use rustradio::{graph::GraphRunner, stream::Streamp, Error};
 use rustradio::{mtgraph::MTGraph, stream::NoCopyStreamp, window::WindowType, Complex};
-use std::iter::zip;
+use std::iter::{self, zip};
 use stdout_sink::StdoutSink;
 use structopt::{
     clap::{crate_authors, crate_description, crate_name},
@@ -227,6 +227,10 @@ pub fn main() -> Result<(), Error> {
     if options.discover {
         graph.add(Box::new(NrfStatSink::new(union)));
     } else {
+        println!(
+            " Ch Addr{}Payload",
+            iter::repeat_n(' ', options.address_length * 2 - 3).collect::<String>()
+        );
         graph.add(Box::new(StdoutSink::new(union)));
     }
 
