@@ -125,7 +125,7 @@ impl NrfDecoder {
     ) -> NrfDecoder {
         data.iter()
             .skip(config.padding_length_bits())
-            .fold(NrfDecoder::Sync(7, !data[0]), |d, b| {
+            .fold(NrfDecoder::Sync(7, !data[config.padding_length_bits()]), |d, b| {
                 d.push_bit(config, out, b)
             })
     }
@@ -134,17 +134,17 @@ impl NrfDecoder {
         match self {
             NrfDecoder::Empty => NrfDecoder::Sync(1, bit),
 
-            // receiving preamble
-            NrfDecoder::Sync(recv, prev) if prev != bit && recv < 8 => {
-                NrfDecoder::Sync(recv + 1, bit)
-            }
-
             // received preamble, check first bit of address
             NrfDecoder::Sync(8, prev) if prev != bit => {
                 let mut buffer = BitVec::with_capacity(config.max_length_bytes() * 8);
                 buffer.grow(config.padding_length_bits(), false);
                 NrfDecoder::RecvAddr(buffer, config.address_prefix.clone())
                     .push_bit(config, out, bit)
+            }
+
+            // receiving preamble
+            NrfDecoder::Sync(recv, prev) if prev != bit => {
+                NrfDecoder::Sync(recv + 1, bit)
             }
 
             // preamble mismatch, reset
